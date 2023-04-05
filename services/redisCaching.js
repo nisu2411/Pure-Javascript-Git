@@ -3,7 +3,7 @@ const { promisify } = require("util");
 
 
 const client = createClient({
-  url:'rediss://red-cgmqo9ndvk4i81asf1e0:mXGEeZUyIEW1jpORMVY4S9sw4zWYmNZS@singapore-redis.render.com:6379'
+  url:'redis://red-cgmqo9ndvk4i81asf1e0:6379'
 });
 
 client.connect();
