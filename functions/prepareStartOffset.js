@@ -1,5 +1,6 @@
 const NetworksList = require("../models/networksList");
 
+
 async function prepareStartOffset(query, start, offset, limit) {
   let networks;
   let totalNetworksCount;
@@ -22,6 +23,8 @@ async function prepareStartOffset(query, start, offset, limit) {
       break;
     case (!start && !offset && !query):
     case (start && offset && !query):
+      networks = await NetworksList.find(queryObject);
+      break;
     default:
       networks = await NetworksList.find().limit(limit);
       break;
