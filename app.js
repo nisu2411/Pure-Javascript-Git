@@ -13,6 +13,7 @@ const networksListRoutes= require("./routes/networksList")
 
 const MONGO_DB_URI = `mongodb+srv://testuser:Test%401234@cluster0.dh7qui7.mongodb.net/?retryWrites=true&w=majority`;
 
+
 const app = express();
 
 // const accessLogStream = fs.createWriteStream(
@@ -65,8 +66,12 @@ app.use((err, req, res, next) => {
 mongoose
   .connect(MONGO_DB_URI)
   .then(() => {
+    console.log('Connected to MongoDB');
     app.listen(process.env.PORT || 3000);
   })
   .catch((err) => {
-    console.log(err);
+    console.error('Failed to connect to MongoDB:', err);
+    process.exit(1);
   });
+
+

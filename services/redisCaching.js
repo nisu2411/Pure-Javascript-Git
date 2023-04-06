@@ -3,7 +3,7 @@ const { promisify } = require("util");
 
 
 const client = createClient({
-  url:'redis://red-cgmqo9ndvk4i81asf1e0:6379'
+  url:'rediss://red-cgmqo9ndvk4i81asf1e0:mXGEeZUyIEW1jpORMVY4S9sw4zWYmNZS@singapore-redis.render.com:6379'
 });
 
 client.connect();
@@ -32,7 +32,7 @@ async function getFromCache(key) {
   }
 }
 
-async function setCache(key, data, expireSeconds = 60) {
+async function setCache(key, data, expireSeconds = 500) {
   try {
     await client.set(key, JSON.stringify(data));
     await client.expire(key, expireSeconds);

@@ -18,6 +18,13 @@ const userSchema = new Schema({
     type: Boolean,
     default:false
   },
+  networks: [{
+    networkId: { type: mongoose.Schema.Types.ObjectId, ref: 'NetworksList' },
+    networkName: String,
+    networkLogoURL: String,
+    networkVerifiedStatus: Boolean,
+    approvalStatus:Boolean
+  }],
   tasks: [
     {
       type: Schema.Types.ObjectId,

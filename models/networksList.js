@@ -3,14 +3,15 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const NetworksListSchema = new Schema({
-  networkId: {
-    type: Schema.Types.ObjectId,
+  networkId:{
+    type:mongoose.Schema.Types.ObjectId,
+    required:true
   },
-  networkLogoURL: {
+  networkName: {
     type: String,
     required: true,
   },
-  networkName: {
+  networkLogoURL: {
     type: String,
     required: true,
   },
@@ -18,6 +19,11 @@ const NetworksListSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  approvalStatus:{
+    type:Boolean,
+    require:true,
+    default: true
+  }
 });
 
 
