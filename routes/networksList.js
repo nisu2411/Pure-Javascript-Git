@@ -12,11 +12,7 @@ router.get(
   isAuth,
   getOverallNetworksListController.getOverAllNetworksList
 );
-router.get(
-  "/getOverallNetworksWithCaching",
-  isAuth,
-  getOverallNetworksListController.getOverAllNetworksListWithCaching
-);
+
 
 router.post(
   "/adminAddSpecificNetworksToUsers",
