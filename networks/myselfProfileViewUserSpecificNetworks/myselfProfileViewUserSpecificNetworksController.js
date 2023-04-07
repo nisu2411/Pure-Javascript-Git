@@ -1,7 +1,8 @@
-const NetworksList = require("../../models/networksList");
 const User = require("../../models/users");
+const { myselfProfileViewUserSpecificNetworksValidator } = require("./myselfProfileViewUserSpecificNetworksValidator");
+const { getFromCache, setCache } = require("../../services/redisCaching");
 
-exports.myselfProfileViewUserSpecificNetworks = async (req, res, next) => {
+exports.myselfProfileViewUserSpecificNetworks = async (req, res) => {
   const userEmail = req.body.email;
   if (!userEmail) {
     return res.status(400).json({
@@ -12,43 +13,59 @@ exports.myselfProfileViewUserSpecificNetworks = async (req, res, next) => {
     });
   }
 
+  const redisKey = `myselfProfileViewUserSpecificNetworks:${userEmail}`;
+  let cachedData;
   try {
-    // Find the user by email
-    const user = await User.findOne({ email: userEmail });
+    cachedData = await getFromCache(redisKey);
+  } catch (error) {
+    console.error(`Error reading from Redis cache: ${error}`);
+  }
+
+  if (cachedData !== null) {
+    const parsedData = JSON.parse(cachedData);
+    return res.json({
+      success: true,
+      message: "User Specific Network List Fetched successfully.",
+      userSpecificNetworksCount: parsedData.userSpecificNetworksCount,
+      totalNetworksCount: parsedData.totalNetworksCount,
+      result: parsedData.result,
+    });
+  }
+
+  try {
+    const user = await User.findOne({ email: userEmail }, { networks: 1 });
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        isAuth: false,
-        errorCode: -1,
-        message: "User Email Not Found",
-      });
-    }
-
-    const userSpecificNetworks = user.networks;
-    const totalNetworksCountForSpecificUser = userSpecificNetworks.length;
-    const totalNetworksCount=await NetworksList.countDocuments();
-
-    if (totalNetworksCountForSpecificUser === 0) {
       return res.json({
         success: true,
-        message: 'User has no networks',
+        message: "User not found",
         userSpecificNetworksCount: 0,
         totalNetworksCount: 0,
         result: [],
       });
     }
 
-    const result = userSpecificNetworks.map(network => ({
-      networkId: network.networkId.toString(),
-      networkName: network.networkName,
-      networkLogoURL: network.networkLogoURL,
-      networkVerifiedStatus: network.networkVerifiedStatus,
-    }));
+    const networks = user.networks.map((network) => network.networkId);
 
+    const {
+      userSpecificNetworksCount,
+      totalNetworksCount,
+      result,
+    } = await myselfProfileViewUserSpecificNetworksValidator(networks);
+
+    const dataToCache = {
+      userSpecificNetworksCount,
+      totalNetworksCount,
+      result,
+    };
+    try {
+      await setCache(redisKey, JSON.stringify(dataToCache), 60); // 60 seconds expiration time
+    } catch (error) {
+      console.error(`Error writing to Redis cache: ${error}`);
+    }
     res.json({
       success: true,
       message: "User Specific Network List Fetched successfully.",
-      userSpecificNetworksCount: totalNetworksCountForSpecificUser,  
+      userSpecificNetworksCount,
       totalNetworksCount,
       result,
     });

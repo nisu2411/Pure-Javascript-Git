@@ -14,7 +14,7 @@ exports.getOverAllNetworksList = async (req, res, next) => {
   let cacheData = await getFromCache(cacheKey);
 
     if (cacheData && caching==='redis') {
-      res.status(200).send(JSON.parse(cacheData));
+      res.status(200).send(JSON.parse(cacheData).lean());
     }
     else{
     const query = prepareSearchQuery(searchKey);
@@ -22,7 +22,7 @@ exports.getOverAllNetworksList = async (req, res, next) => {
     const { networks, totalNetworksCount } = await prepareStartOffset(query,start,offset,defaultLimit);
   
     const response = prepareResponse(networks, totalNetworksCount);
-    await setCache(cacheKey, JSON.stringify(response));
+    await setCache(cacheKey, JSON.stringify(response).lean());
     res.status(200).send(response);
   }
 
