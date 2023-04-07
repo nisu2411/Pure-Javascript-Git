@@ -1,4 +1,4 @@
-const { adminDeleteAllNetworksFromUsersValidator } = require("./adminDeleteAllNetworksFromUsersValidator");
+const { adminDeleteAllNetworksFromUsersValidator } = require("./adminDeleteAllNetworksFromUsersValidatorCaching");
 const { getFromCache,delCache} = require("../../services/redisCaching");
 
 exports.adminDeleteAllNetworksFromUsers = async (req, res) => {
@@ -15,5 +15,17 @@ exports.adminDeleteAllNetworksFromUsers = async (req, res) => {
   }
 
   const result = await adminDeleteAllNetworksFromUsersValidator(userEmail);
+
+  const redisKey = `myselfProfileViewUserSpecificNetworks:${userEmail}`;
+  let cachedData;
+  try {
+    cachedData = await getFromCache(redisKey);
+  } catch (error) {
+    console.error(`Error reading from Redis cache: ${error}`);
+  }
+
+  if (cachedData) {
+    await delCache(redisKey);
+  }
   res.status(result.success ? 200 : 500).json(result);
 };

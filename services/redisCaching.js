@@ -32,10 +32,10 @@ async function getFromCache(key) {
   }
 }
 
-async function setCache(key, data, expireSeconds = 60) {
+async function setCache(key, data) {
   try {
     await client.set(key, JSON.stringify(data));
-    await client.expire(key, expireSeconds);
+    //await client.expire(key, expireSeconds);
   } catch (err) {
     throw new Error(err);
   }

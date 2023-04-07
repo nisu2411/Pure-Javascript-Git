@@ -130,7 +130,7 @@ exports.signInUser = (req, res, next) => {
         message: "User Logged In",
         result: [result],
         token: token,
-        expiresIn:"1h"
+        expiresIn:"100h"
       });
     })
     .catch((error) => {

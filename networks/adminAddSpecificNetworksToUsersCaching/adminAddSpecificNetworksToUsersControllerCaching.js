@@ -1,4 +1,5 @@
-const { adminAddSpecificNetworksToUsersValidator } = require('./adminAddSpecificNetworksToUsersValidator');
+const { adminAddSpecificNetworksToUsersValidator } = require('./adminAddSpecificNetworksToUsersValidatorCaching');
+const {getFromCache,delCache} = require("../../services/redisCaching");
 
 exports.adminAddSpecificNetworksToUsers = async (req, res) => {
   try {
@@ -9,7 +10,16 @@ exports.adminAddSpecificNetworksToUsers = async (req, res) => {
     const userEmail = req.body.email;
 
     const result = await adminAddSpecificNetworksToUsersValidator(userEmail, numberOfNetworks);
-
+    const redisKey = `myselfProfileViewUserSpecificNetworks:${userEmail}`;
+    let cachedData;
+    try {
+      cachedData = await getFromCache(redisKey);
+    } catch (error) {
+      console.error(`Error reading from Redis cache: ${error}`);
+    }
+    if (cachedData) {
+      await delCache(redisKey);
+    }
     return res.status(result.success ? 200 : 500).json(result);
 
   } catch (err) {
