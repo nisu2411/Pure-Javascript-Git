@@ -58,7 +58,7 @@ exports.myselfProfileViewUserSpecificNetworks = async (req, res) => {
       result,
     };
     try {
-      await setCache(redisKey, JSON.stringify(dataToCache), 60); // 60 seconds expiration time
+      await setCache(redisKey, JSON.stringify(dataToCache), 60);
     } catch (error) {
       console.error(`Error writing to Redis cache: ${error}`);
     }
