@@ -14,7 +14,7 @@ exports.getOverAllNetworksList = async (req, res, next) => {
     const { networks, totalNetworksCount } = await prepareStartOffset(query,start,offset,defaultLimit);
   
     const response = prepareResponse(networks, totalNetworksCount);
-    await setCache(cacheKey, JSON.stringify(response));
+
     res.status(200).send(response);
   
 };
