@@ -49,5 +49,12 @@ async function delCache(key) {
   }
 }
 
+async function flushCache() {
+  try {
+    await client.flushAll();
+  } catch (err) {
+    throw new Error(err);
+  }
+}
 
-module.exports = { getFromCache, setCache,delCache };
+module.exports = { getFromCache, setCache,delCache,flushCache };

@@ -1,5 +1,5 @@
 const { adminAddSpecificNetworksToUsersValidator } = require('./adminAddSpecificNetworksToUsersValidatorCaching');
-const {getFromCache,delCache} = require("../../services/redisCaching");
+const {getFromCache,delCache,flushCache} = require("../../services/redisCaching");
 
 exports.adminAddSpecificNetworksToUsers = async (req, res) => {
   try {
@@ -20,6 +20,7 @@ exports.adminAddSpecificNetworksToUsers = async (req, res) => {
     if (cachedData) {
       await delCache(redisKey);
     }
+    await flushCache();
     return res.status(result.success ? 200 : 500).json(result);
 
   } catch (err) {

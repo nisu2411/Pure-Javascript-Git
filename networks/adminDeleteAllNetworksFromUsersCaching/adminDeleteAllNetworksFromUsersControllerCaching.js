@@ -1,5 +1,5 @@
 const { adminDeleteAllNetworksFromUsersValidator } = require("./adminDeleteAllNetworksFromUsersValidatorCaching");
-const { getFromCache,delCache} = require("../../services/redisCaching");
+const { getFromCache,delCache,flushCache} = require("../../services/redisCaching");
 
 exports.adminDeleteAllNetworksFromUsers = async (req, res) => {
   const userEmail = req.body.email;
@@ -27,5 +27,6 @@ exports.adminDeleteAllNetworksFromUsers = async (req, res) => {
   if (cachedData) {
     await delCache(redisKey);
   }
+  await flushCache();
   res.status(result.success ? 200 : 500).json(result);
 };
