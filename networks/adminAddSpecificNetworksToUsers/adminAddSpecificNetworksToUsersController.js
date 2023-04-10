@@ -1,4 +1,5 @@
 const { adminAddSpecificNetworksToUsersValidator } = require('./adminAddSpecificNetworksToUsersValidator');
+const { validateUserEmail, validateParams } = require("../../functions/emailValidator");
 
 exports.adminAddSpecificNetworksToUsers = async (req, res) => {
   try {
@@ -7,6 +8,16 @@ exports.adminAddSpecificNetworksToUsers = async (req, res) => {
       numberOfNetworks = 50; 
     }
     const userEmail = req.body.email;
+    const validationUserEmailError = await validateUserEmail(userEmail);
+    if (validationUserEmailError) {
+      return res.status(500).json(validationUserEmailError)
+    }
+  
+    const validationParamError = await validateParams(req.body);
+    if (validationParamError) {
+      return res.status(500).json(validationParamError);
+    }
+  
 
     const result = await adminAddSpecificNetworksToUsersValidator(userEmail, numberOfNetworks);
 

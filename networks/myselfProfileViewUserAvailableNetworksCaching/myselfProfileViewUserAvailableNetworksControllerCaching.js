@@ -1,16 +1,18 @@
 const NetworksList = require("../../models/networksList");
 const { myselfProfileViewUserAvailableNetworksValidator } = require("./myselfProfileViewUserAvailableNetworksValidatorCaching");
 const { getFromCache, setCache } = require("../../services/redisCaching");
+const { validateUserEmail, validateParams } = require("../../functions/emailValidator");
 
 exports.myselfProfileViewUserAvailableNetworks = async (req, res) => {
   const userEmail = req.body.email;
-  if (!userEmail) {
-    return res.status(400).json({
-      success: false,
-      isAuth: false,
-      errorCode: -1,
-      message: "Please provide user email in the request body",
-    });
+  const validationUserEmailError = await validateUserEmail(userEmail);
+  if (validationUserEmailError) {
+    return res.status(500).json(validationUserEmailError)
+  }
+
+  const validationParamError = await validateParams(req.body);
+  if (validationParamError) {
+    return res.status(500).json(validationParamError);
   }
 
   const redisKey = `myselfProfileViewUserAvailableNetworksController:${userEmail}`;
